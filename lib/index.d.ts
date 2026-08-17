@@ -6,6 +6,7 @@ export declare const DSH_WEAVE_STAGE: "transport-mvp";
 /** The first public protocol revision. */
 export declare const DSH_WEAVE_PROTOCOL_VERSION: 1;
 export declare const name = "dsh-weave";
+export declare const inject: readonly ["tools"];
 export interface DshWeaveMessage { readonly id: string; readonly from: string; readonly to: string; readonly text: string; readonly peerId: string; readonly receivedAt: number; }
 export interface DshWeaveConfig { trustedPeers?: readonly string[]; secretKey?: readonly number[]; identityPath?: string; persistIdentity?: boolean; relayMode?: "default" | "disabled"; }
 export declare class DshWeaveTransport {

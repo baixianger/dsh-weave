@@ -11,7 +11,11 @@
       "default": "./lib/index.js"
     }
   },
-  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "files": [
     "lib/",
     "docs/",
@@ -51,5 +55,11 @@
   },
   "dependencies": {
     "@number0/iroh": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": ">=0.1.0-rc.5"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.7"
   }
 }
