@@ -1,0 +1,49 @@
+{
+  "name": "@baixianger/dsh-mesh",
+  "version": "0.1.0-rc.0",
+  "description": "A private, peer-to-peer mesh protocol for connecting DeepSeek Harness nodes across machines.",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "lib/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "check": "node --check lib/index.js && npm pack --dry-run"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "agent",
+    "mesh",
+    "iroh",
+    "p2p",
+    "quic"
+  ],
+  "author": "Xiang Bai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baixianger/dsh-mesh.git"
+  },
+  "bugs": {
+    "url": "https://github.com/baixianger/dsh-mesh/issues"
+  },
+  "homepage": "https://github.com/baixianger/dsh-mesh#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  }
+}
