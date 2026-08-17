@@ -18,6 +18,20 @@ test("trusted Iroh peers exchange a DSH Weave message", async () => {
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 
+test("a claimed Weave frame returns a protocol response without Bridge delivery", async () => {
+  const bridgeCalls = [];
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false });
+  const receiver = new DshWeaveTransport({ dshBridge: { deliverExternal(...args) { bridgeCalls.push(args); } } }, { relayMode: "disabled", persistIdentity: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    receiver.subscribe((frame) => frame.to === "room" ? { claimed: true, result: { cursor: 7, events: [frame.text] } } : false);
+    const delivered = await sender.send({ ticket: receiverTicket, from: "client", to: "room", text: "read" });
+    assert.deepEqual(delivered.result, { cursor: 7, events: ["read"] });
+    assert.equal(bridgeCalls.length, 0);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
 test("a default Weave identity survives a transport restart", async () => {
   const identityPath = join(await mkdtemp(join(tmpdir(), "dsh-weave-")), "identity.json");
   const first = new DshWeaveTransport(undefined, { relayMode: "disabled", identityPath });
