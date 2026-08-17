@@ -6,7 +6,7 @@
 
 | Status | Transport | Scope |
 | --- | --- | --- |
-| `0.1.0-rc.2` transport MVP | Iroh + QUIC | Trusted DSH nodes |
+| `0.1.0-rc.3` transport MVP | Iroh + QUIC | Trusted DSH nodes |
 
 ## Product boundary
 
@@ -68,7 +68,9 @@ See [architecture](./docs/ARCHITECTURE.md), [wire protocol](./docs/PROTOCOL.md),
 Exchange each node's ticket out of band, then explicitly trust it before
 sending. `dsh-weave` rejects a frame from an untrusted endpoint even though
 Iroh has already encrypted the connection. This separates transport identity
-from DSH authorization.
+from DSH authorization. The node's Iroh identity is persisted locally under
+`~/.dsh/dsh-weave/identity.json` with owner-only permissions, so a restart
+does not silently create a new peer identity.
 
 ## Roadmap
 

@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
+import { mkdtemp, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { DshWeaveTransport } from "../lib/index.js";
 
 test("trusted Iroh peers exchange a DSH Weave message", async () => {
-  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled" });
-  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled" });
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false });
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false });
   try {
     const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
     sender.trust(receiverTicket); receiver.trust(senderTicket);
@@ -13,4 +16,17 @@ test("trusted Iroh peers exchange a DSH Weave message", async () => {
     const received = await delivered;
     assert.equal(received.from, "source"); assert.equal(received.to, "target"); assert.equal(received.text, "hello from Iroh");
   } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
+test("a default Weave identity survives a transport restart", async () => {
+  const identityPath = join(await mkdtemp(join(tmpdir(), "dsh-weave-")), "identity.json");
+  const first = new DshWeaveTransport(undefined, { relayMode: "disabled", identityPath });
+  const firstTicket = await first.ticket(); await first.close();
+  const second = new DshWeaveTransport(undefined, { relayMode: "disabled", identityPath });
+  try {
+    const firstId = (await import("@number0/iroh")).EndpointTicket.fromString(firstTicket).endpointAddr().id().toString();
+    const secondId = (await import("@number0/iroh")).EndpointTicket.fromString(await second.ticket()).endpointAddr().id().toString();
+    assert.equal(secondId, firstId);
+    assert.equal((await stat(identityPath)).mode & 0o777, 0o600);
+  } finally { await second.close(); }
 });

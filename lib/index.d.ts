@@ -7,7 +7,7 @@ export declare const DSH_WEAVE_STAGE: "transport-mvp";
 export declare const DSH_WEAVE_PROTOCOL_VERSION: 1;
 export declare const name = "dsh-weave";
 export interface DshWeaveMessage { readonly id: string; readonly from: string; readonly to: string; readonly text: string; readonly peerId: string; readonly receivedAt: number; }
-export interface DshWeaveConfig { trustedPeers?: readonly string[]; secretKey?: readonly number[]; relayMode?: "default" | "disabled"; }
+export interface DshWeaveConfig { trustedPeers?: readonly string[]; secretKey?: readonly number[]; identityPath?: string; persistIdentity?: boolean; relayMode?: "default" | "disabled"; }
 export declare class DshWeaveTransport {
   constructor(ctx: unknown, config?: DshWeaveConfig);
   start(): Promise<unknown>; close(): Promise<void>; ticket(): Promise<string>; trust(ticket: string): string; peers(): string[];
