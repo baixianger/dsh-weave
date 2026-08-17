@@ -6,17 +6,19 @@
 
 | Status | Transport | Scope |
 | --- | --- | --- |
-| `0.1.0-rc.0` design preview | Iroh + QUIC | Trusted DSH nodes |
+| `0.1.0-rc.1` design preview | Iroh + QUIC | Trusted DSH nodes |
 
-## Why Mesh?
+## Product boundary
 
-`dsh-bridge` is the local contract: it normalizes events between DSH, a CLI, and other local runtimes. `dsh-weave` carries that same contract across machines.
+`dsh-bridge` is the local contract: it connects sessions in one DSH host.
+`dsh-weave` carries approved messages between those hosts. `dsh-chat` is the
+optional Web group-chat surface above both layers.
 
 ```text
 DSH node A ── dsh-bridge ── dsh-weave ── Iroh ── Iroh ── dsh-weave ── dsh-bridge ── DSH node B
 ```
 
-Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Mesh owns the parts specific to DSH: membership, capabilities, task approval, event ordering, and durable delivery.
+Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Weave owns the parts specific to DSH: membership, capabilities, task approval, event ordering, and durable delivery.
 
 ## Install
 
