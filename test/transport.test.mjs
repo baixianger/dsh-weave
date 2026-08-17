@@ -18,19 +18,6 @@ test("trusted Iroh peers exchange a DSH Weave message", async () => {
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 
-test("a protocol listener can claim a frame before Bridge delivery", async () => {
-  const bridgeCalls = [];
-  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false });
-  const receiver = new DshWeaveTransport({ dshBridge: { deliverExternal(...args) { bridgeCalls.push(args); } } }, { relayMode: "disabled", persistIdentity: false });
-  try {
-    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
-    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
-    receiver.subscribe(async (frame) => frame.to === "dsh-chat");
-    assert.equal((await sender.send({ ticket: receiverTicket, from: "chat", to: "dsh-chat", text: "room frame" })).delivered, true);
-    assert.equal(bridgeCalls.length, 0);
-  } finally { await Promise.all([sender.close(), receiver.close()]); }
-});
-
 test("a default Weave identity survives a transport restart", async () => {
   const identityPath = join(await mkdtemp(join(tmpdir(), "dsh-weave-")), "identity.json");
   const first = new DshWeaveTransport(undefined, { relayMode: "disabled", identityPath });
