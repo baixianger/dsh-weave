@@ -70,7 +70,9 @@ sending. `dsh-weave` rejects a frame from an untrusted endpoint even though
 Iroh has already encrypted the connection. This separates transport identity
 from DSH authorization. The node's Iroh identity is persisted locally under
 `~/.dsh/dsh-weave/identity.json` with owner-only permissions, so a restart
-does not silently create a new peer identity.
+does not silently create a new peer identity. Explicitly trusted peer IDs are
+also stored locally, so previously approved room members keep working after a
+host restart.
 
 ## Roadmap
 

@@ -10,7 +10,7 @@ test("trusted Iroh peers exchange a DSH Weave message", async () => {
   const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false });
   try {
     const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
-    sender.trust(receiverTicket); receiver.trust(senderTicket);
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
     const delivered = new Promise((resolve) => receiver.subscribe(resolve));
     assert.equal((await sender.send({ ticket: receiverTicket, from: "source", to: "target", text: "hello from Iroh" })).delivered, true);
     const received = await delivered;
@@ -29,4 +29,16 @@ test("a default Weave identity survives a transport restart", async () => {
     assert.equal(secondId, firstId);
     assert.equal((await stat(identityPath)).mode & 0o777, 0o600);
   } finally { await second.close(); }
+});
+
+test("trusted peer identities survive a transport restart", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "dsh-weave-"));
+  const peersPath = join(directory, "peers.json");
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  const ticket = await receiver.ticket();
+  const first = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
+  await first.trust(ticket); await first.close();
+  const second = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
+  try { assert.equal(second.peers().length, 0); await second.start(); assert.equal(second.peers().length, 1); }
+  finally { await Promise.all([receiver.close(), second.close()]); }
 });
