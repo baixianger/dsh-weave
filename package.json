@@ -1,6 +1,6 @@
 {
   "name": "dsh-weave",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "description": "A private, peer-to-peer weave protocol for connecting DeepSeek Harness nodes across machines.",
   "type": "module",
   "main": "./lib/index.js",
@@ -11,14 +11,17 @@
       "default": "./lib/index.js"
     }
   },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
   "files": [
     "lib/",
     "docs/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "cordis.patch.yml"
   ],
   "scripts": {
-    "check": "node --check lib/index.js && npm pack --dry-run"
+    "check": "node --check lib/index.js && npm pack --dry-run",
+    "test": "node --test test/**/*.test.mjs"
   },
   "keywords": [
     "deepseek-harness",
@@ -45,5 +48,8 @@
   "publishConfig": {
     "access": "public",
     "tag": "next"
+  },
+  "dependencies": {
+    "@number0/iroh": "^1.1.0"
   }
 }

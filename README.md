@@ -6,7 +6,7 @@
 
 | Status | Transport | Scope |
 | --- | --- | --- |
-| `0.1.0-rc.1` design preview | Iroh + QUIC | Trusted DSH nodes |
+| `0.1.0-rc.2` transport MVP | Iroh + QUIC | Trusted DSH nodes |
 
 ## Product boundary
 
@@ -22,10 +22,13 @@ Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer pat
 
 ## Install
 
-This first release publishes the public protocol contract and architecture documents. The executable transport is not included yet.
+The transport MVP provides an Iroh endpoint, ticket exchange, explicit peer
+trust, and a message frame that is handed to `dsh-bridge` when both plugins
+run in the same host. It deliberately does not auto-trust a peer that merely
+knows an endpoint address.
 
 ```bash
-npm install dsh-weave@next
+dsh plugin --profile web add dsh-weave@next
 ```
 
 ```js
@@ -60,11 +63,18 @@ Every node has a persistent network identity. Joining a mesh requires an expirin
 
 See [architecture](./docs/ARCHITECTURE.md), [wire protocol](./docs/PROTOCOL.md), and [security model](./docs/SECURITY.md).
 
+## Pairing and delivery
+
+Exchange each node's ticket out of band, then explicitly trust it before
+sending. `dsh-weave` rejects a frame from an untrusted endpoint even though
+Iroh has already encrypted the connection. This separates transport identity
+from DSH authorization.
+
 ## Roadmap
 
 - [x] Publish the v1 protocol contract
-- [ ] `dsh-bridge` local event adapter
-- [ ] Iroh endpoint adapter and pair-by-invite flow
+- [x] `dsh-bridge` local event adapter
+- [x] Iroh endpoint adapter and ticket-based trust flow
 - [ ] Remote task request / approval / result streams
 - [ ] Durable outbox and reconnect replay
 - [ ] Self-hosted relay and discovery guidance
