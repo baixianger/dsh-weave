@@ -1,15 +1,15 @@
-# DSH Mesh architecture
+# DSH Weave architecture
 
 ## Goal
 
-DSH Mesh connects trusted DeepSeek Harness nodes across hosts while preserving a local-first execution model. It is not a shared shell, a credential synchronizer, or an unauthenticated agent swarm.
+DSH Weave connects trusted DeepSeek Harness nodes across hosts while preserving a local-first execution model. It is not a shared shell, a credential synchronizer, or an unauthenticated agent swarm.
 
 ## Layers
 
 ```text
 DSH plugin surface
   └─ dsh-bridge: local event and task adapter
-       └─ dsh-mesh core: membership, policy, outbox, routing
+       └─ dsh-weave core: membership, policy, outbox, routing
             └─ Iroh adapter: Endpoint, discovery, QUIC streams, relay fallback
 ```
 
@@ -38,7 +38,7 @@ An invite contains a mesh identifier, intended roles, a short expiry, and a sign
 
 1. A user approves a task handoff from DSH node A.
 2. `dsh-bridge` emits a normalized task request to mesh core.
-3. Mesh core persists the request to an outbox and opens an Iroh bidirectional stream using `dsh-mesh/1`.
+3. Weave core persists the request to an outbox and opens an Iroh bidirectional stream using `dsh-weave/1`.
 4. Node B validates membership and the requested capability, then asks its local DSH policy for approval.
 5. Node B sends an acknowledgement, emits progress events, and finally returns a result reference.
 6. Node A de-duplicates events by message id and records the terminal outcome.

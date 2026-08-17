@@ -1,4 +1,4 @@
-# DSH Mesh security model
+# DSH Weave security model
 
 ## Trust boundaries
 

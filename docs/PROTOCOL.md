@@ -1,8 +1,8 @@
-# DSH Mesh wire protocol v1
+# DSH Weave wire protocol v1
 
 ## Transport
 
-- ALPN: `dsh-mesh/1`
+- ALPN: `dsh-weave/1`
 - Transport: Iroh endpoint over authenticated QUIC
 - Encoding: length-prefixed UTF-8 JSON for the preview protocol
 - Streams: one control stream and one stream per task request

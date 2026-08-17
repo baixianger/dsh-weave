@@ -1,7 +1,7 @@
 {
-  "name": "@baixianger/dsh-mesh",
+  "name": "dsh-weave",
   "version": "0.1.0-rc.0",
-  "description": "A private, peer-to-peer mesh protocol for connecting DeepSeek Harness nodes across machines.",
+  "description": "A private, peer-to-peer weave protocol for connecting DeepSeek Harness nodes across machines.",
   "type": "module",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -33,12 +33,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baixianger/dsh-mesh.git"
+    "url": "git+https://github.com/baixianger/dsh-weave.git"
   },
   "bugs": {
-    "url": "https://github.com/baixianger/dsh-mesh/issues"
+    "url": "https://github.com/baixianger/dsh-weave/issues"
   },
-  "homepage": "https://github.com/baixianger/dsh-mesh#readme",
+  "homepage": "https://github.com/baixianger/dsh-weave#readme",
   "engines": {
     "node": ">=22"
   },

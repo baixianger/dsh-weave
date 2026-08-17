@@ -1,8 +1,8 @@
-# DSH Mesh
+# DSH Weave
 
 > A private, peer-to-peer fabric for connecting DeepSeek Harness nodes across machines.
 
-**DSH Mesh** turns a collection of local DSH installations into an intentional network: nodes can discover trusted peers, exchange session-aware events, hand off work, and recover after a connection drops — without placing a central server in the execution path.
+**DSH Weave** turns a collection of local DSH installations into an intentional network: nodes can discover trusted peers, exchange session-aware events, hand off work, and recover after a connection drops — without placing a central server in the execution path.
 
 | Status | Transport | Scope |
 | --- | --- | --- |
@@ -10,10 +10,10 @@
 
 ## Why Mesh?
 
-`dsh-bridge` is the local contract: it normalizes events between DSH, a CLI, and other local runtimes. `dsh-mesh` carries that same contract across machines.
+`dsh-bridge` is the local contract: it normalizes events between DSH, a CLI, and other local runtimes. `dsh-weave` carries that same contract across machines.
 
 ```text
-DSH node A ── dsh-bridge ── dsh-mesh ── Iroh ── Iroh ── dsh-mesh ── dsh-bridge ── DSH node B
+DSH node A ── dsh-bridge ── dsh-weave ── Iroh ── Iroh ── dsh-weave ── dsh-bridge ── DSH node B
 ```
 
 Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Mesh owns the parts specific to DSH: membership, capabilities, task approval, event ordering, and durable delivery.
@@ -23,19 +23,19 @@ Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer pat
 This first release publishes the public protocol contract and architecture documents. The executable transport is not included yet.
 
 ```bash
-npm install @baixianger/dsh-mesh@next
+npm install dsh-weave@next
 ```
 
 ```js
 import {
-  DSH_MESH_ALPN,
-  DSH_MESH_PROTOCOL_VERSION,
-  DSH_MESH_STAGE,
-} from "@baixianger/dsh-mesh";
+  DSH_WEAVE_ALPN,
+  DSH_WEAVE_PROTOCOL_VERSION,
+  DSH_WEAVE_STAGE,
+} from "dsh-weave";
 
-console.log(DSH_MESH_ALPN);             // dsh-mesh/1
-console.log(DSH_MESH_PROTOCOL_VERSION); // 1
-console.log(DSH_MESH_STAGE);            // design-preview
+console.log(DSH_WEAVE_ALPN);             // dsh-weave/1
+console.log(DSH_WEAVE_PROTOCOL_VERSION); // 1
+console.log(DSH_WEAVE_STAGE);            // design-preview
 ```
 
 ## The first protocol
