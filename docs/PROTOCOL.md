@@ -1,5 +1,13 @@
 # DSH Weave wire protocol v1
 
+## Authoritative room extension
+
+`dsh-chat/2` is carried in a normal Weave frame with target `dsh-chat/2`.
+Its request/reply results implement `room.invite`, `room.read`, `room.post`,
+and `room.delivery`. The room host validates the invitation capability for
+reads and posts. Claimed control frames never enter DSH Bridge; only an
+explicit `room.delivery` may wake an agent.
+
 ## Transport
 
 - ALPN: `dsh-weave/1`
