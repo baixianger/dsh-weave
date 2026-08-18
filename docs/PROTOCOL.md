@@ -4,9 +4,10 @@
 
 `dsh-chat/2` is carried in a normal Weave frame with target `dsh-chat/2`.
 Its request/reply results implement `room.invite`, `room.read`, `room.post`,
-and `room.delivery`. The room host validates the invitation capability for
-reads and posts. Claimed control frames never enter DSH Bridge; only an
-explicit `room.delivery` may wake an agent.
+and `room.delivery`. The room host validates authenticated host id plus room
+capability for reads and posts. A delivery receiver validates host id,
+capability, and the exact invited local session. Claimed control frames never
+enter DSH Bridge; only an authorized `room.delivery` may wake an agent.
 
 `room.read` accepts an optional `waitMs` of up to 25 seconds. A remote room
 view repeats this cursor read while open; an empty timeout response advances no
@@ -20,6 +21,11 @@ Bridge handoff is the delivery acknowledgement.
 - Transport: Iroh endpoint over authenticated QUIC
 - Encoding: length-prefixed UTF-8 JSON for the preview protocol
 - Streams: one control stream and one stream per task request
+
+The reserved target `dsh-weave/system/1` serves the paired-host
+workspace/session catalog. It excludes archived sessions and workspaces before
+the response crosses the network. Application plugins consume this catalog by
+stable host id and never receive endpoint tickets.
 
 ## Envelope
 

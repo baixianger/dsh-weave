@@ -32,6 +32,31 @@ test("a claimed Weave frame returns a protocol response without Bridge delivery"
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 
+test("Weave owns the reachable workspace session catalog and hides archived entries", async () => {
+  const active = { id: "active-session", header: { id: "active-session", createdAt: 20 } };
+  const archived = { id: "archived-session", header: { id: "archived-session", createdAt: 10 } };
+  const receiver = new DshWeaveTransport({
+    sessions: { list() { return [active]; } },
+    sessionTitle: { get(session) { return { title: session.id === "active-session" ? "Active build" : session.id }; } },
+    sessionPersistence: { async list() { return [active.header, archived.header]; } },
+    workspaceRegistry: {
+      archivedSessionIds: ["archived-session"],
+      list() { return [
+        { id: "workspace-live", title: "Release", sessionIds: ["active-session", "archived-session"] },
+        { id: "workspace-archived", title: "Old", archived: true, sessionIds: ["active-session"] }
+      ]; }
+    }
+  }, { relayMode: "disabled", persistIdentity: false, persistPeers: false, hostName: "studio-mini" });
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    const catalogs = await sender.remoteSessions();
+    assert.equal(catalogs.length, 1); assert.equal(catalogs[0].hostName, "studio-mini");
+    assert.deepEqual(catalogs[0].workspaces, [{ id: "workspace-live", title: "Release", sessions: [{ id: "active-session", title: "Active build", running: true, updatedAt: 20 }] }]);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
 test("a default Weave identity survives a transport restart", async () => {
   const identityPath = join(await mkdtemp(join(tmpdir(), "dsh-weave-")), "identity.json");
   const first = new DshWeaveTransport(undefined, { relayMode: "disabled", identityPath });

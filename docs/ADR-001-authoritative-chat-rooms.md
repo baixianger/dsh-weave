@@ -15,17 +15,20 @@ membership, and retention problems without improving agent delivery.
 ## Decision
 
 The node that creates a room is its authoritative host. A remote member stores
-only a room ticket (host Iroh ticket, room id, capability, and last read cursor)
-plus an optional disposable UI cache. The host durably owns membership, the
+only a room link (stable Weave host id, room id, capability, addressed local
+session id, and last read cursor) plus an optional disposable UI cache. Endpoint
+tickets remain exclusively in Weave. The host durably owns membership, the
 ordered event log, and any pending targeted delivery.
 
-`dsh-weave/2` will expose request/reply frames over Iroh QUIC:
+`dsh-chat/2` uses Weave request/reply frames over Iroh QUIC:
 
 - `room.invite`: creates a local room link, never a room replica.
 - `room.read`: returns events after a cursor for a currently open room view.
 - `room.post`: appends a public message at the host.
 - `room.delivery`: carries an explicitly targeted mention to a member node.
 
+Every room request is bound to the authenticated Weave host id. A targeted
+delivery additionally validates the room capability and exact local recipient.
 The room view long-polls `room.read` while open and resumes from its cursor on
 reconnect. A public event is rendered by the client only. The host creates a
 `room.delivery` event only for `@session-id` or `@all`; the recipient node then

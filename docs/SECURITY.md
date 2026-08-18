@@ -3,8 +3,8 @@
 ## Trust boundaries
 
 1. Iroh transport authentication proves possession of an endpoint key.
-2. Mesh membership binds that endpoint to a named, approved node.
-3. Capability grants constrain the actions a member may request.
+2. Weave pairing binds that endpoint to an approved stable host id.
+3. The receiving application validates its own capability and target scope.
 4. Local DSH policy makes the final execution decision.
 
 No layer can bypass the next one.
@@ -12,8 +12,8 @@ No layer can bypass the next one.
 ## Defaults
 
 - Unknown endpoint: reject.
-- Known endpoint without Mesh membership: reject.
-- Known member without requested capability: reject.
+- Known endpoint without Weave pairing: reject.
+- Paired host without the application's requested capability: reject.
 - Authorized task with no local approval rule: ask the local operator.
 - Network loss: retain the outbox; do not guess task success.
 

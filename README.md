@@ -18,7 +18,7 @@ optional Web group-chat surface above both layers.
 DSH node A ── dsh-bridge ── dsh-weave ── Iroh ── Iroh ── dsh-weave ── dsh-bridge ── DSH node B
 ```
 
-Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Weave owns the parts specific to DSH: membership, capabilities, task approval, event ordering, and durable delivery.
+Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Weave owns DSH host identity, host trust, endpoint refresh, reachability, the workspace/session directory, and authenticated request delivery. Higher-level plugins own their domain membership and capabilities; for example, Chat owns rooms and room capabilities.
 
 ## Install
 
@@ -81,7 +81,9 @@ pairing UIs.
 The Web profile contributes a dedicated **Settings → Weave** page. It shows
 the current Iroh ticket and relay mode, accepts trusted peer tickets, and lists
 paired endpoint identities. Higher-level plugins such as `dsh-chat` consume
-that paired-host catalog but do not own transport identity or relay policy.
+the paired-host workspace/session catalog and send by stable host id. They
+never receive or persist peer endpoint tickets and do not own transport
+identity, pairing, or relay policy.
 
 ## Roadmap
 
