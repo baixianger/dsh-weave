@@ -11,7 +11,7 @@ export interface DshWeaveMessage { readonly id: string; readonly from: string; r
 export interface DshWeaveConfig { trustedPeers?: readonly string[]; secretKey?: readonly number[]; identityPath?: string; peersPath?: string; persistIdentity?: boolean; persistPeers?: boolean; relayMode?: "default" | "disabled"; }
 export declare class DshWeaveTransport {
   constructor(ctx: unknown, config?: DshWeaveConfig);
-  start(): Promise<unknown>; close(): Promise<void>; ticket(): Promise<string>; trust(ticket: string): Promise<string>; peers(): string[];
+  start(): Promise<unknown>; close(): Promise<void>; ticket(): Promise<string>; trust(ticket: string): Promise<string>; peers(): string[]; endpoints(): Array<{ peerId: string; ticket: string }>;
   subscribe(listener: (message: DshWeaveMessage) => void): () => void;
   send(request: { ticket: string; from: string; to: string; text: string; id?: string }): Promise<{ id: string; peerId: string; delivered: true; result?: unknown }>;
 }

@@ -70,12 +70,18 @@ sending. `dsh-weave` rejects a frame from an untrusted endpoint even though
 Iroh has already encrypted the connection. This separates transport identity
 from DSH authorization. The node's Iroh identity is persisted locally under
 `~/.dsh/dsh-weave/identity.json` with owner-only permissions, so a restart
-does not silently create a new peer identity. Explicitly trusted peer IDs are
-also stored locally, so previously approved room members keep working after a
-host restart. An endpoint ticket also carries live addressing hints; retrieve
-a fresh ticket after restarting `dsh web` before initiating a new connection.
+does not silently create a new peer identity. Explicitly trusted peer IDs and
+their last accepted endpoint tickets are also stored locally with owner-only
+permissions, so paired-host discovery survives a restart. An endpoint ticket
+also carries addressing hints; trust a fresh ticket again when a peer changes
+its reachable addresses.
 The trusted-host `/dsh-weave/ticket` RPC exposes that current ticket for
 pairing UIs.
+
+The Web profile contributes a dedicated **Settings → Weave** page. It shows
+the current Iroh ticket and relay mode, accepts trusted peer tickets, and lists
+paired endpoint identities. Higher-level plugins such as `dsh-chat` consume
+that paired-host catalog but do not own transport identity or relay policy.
 
 ## Roadmap
 

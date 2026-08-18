@@ -1,6 +1,6 @@
 {
   "name": "dsh-weave",
-  "version": "0.1.0-rc.8",
+  "version": "0.1.0-rc.9",
   "description": "A private, peer-to-peer weave protocol for connecting DeepSeek Harness nodes across machines.",
   "type": "module",
   "main": "./lib/index.js",
@@ -9,12 +9,17 @@
     ".": {
       "types": "./lib/index.d.ts",
       "default": "./lib/index.js"
-    }
+    },
+    "./client": { "default": "./lib/client.js" },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
   },
   "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    }
+    "client": {
+      "inject": ["@deepseek-ai/dsh-client-runtime", "@deepseek-ai/dsh-client-ui-settings"],
+      "platform": "web"
+    },
+    "bundle": { "patch": "./cordis.patch.yml" }
   },
   "files": [
     "lib/",
@@ -24,7 +29,7 @@
     "cordis.patch.yml"
   ],
   "scripts": {
-    "check": "node --check lib/index.js && npm pack --dry-run",
+    "check": "node --check lib/index.js && node --check lib/client.js && npm pack --dry-run",
     "test": "node --test test/**/*.test.mjs"
   },
   "keywords": [
@@ -57,7 +62,8 @@
     "@number0/iroh": "^1.1.0"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-tools": ">=0.1.0-rc.5"
+    "@deepseek-ai/dsh-tools": ">=0.1.0-rc.5",
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.7"

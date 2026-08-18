@@ -53,6 +53,9 @@ test("trusted peer identities survive a transport restart", async () => {
   const first = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
   await first.trust(ticket); await first.close();
   const second = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
-  try { assert.equal(second.peers().length, 0); await second.start(); assert.equal(second.peers().length, 1); }
+  try {
+    assert.equal(second.peers().length, 0); await second.start(); assert.equal(second.peers().length, 1);
+    assert.equal(second.endpoints().length, 1); assert.equal(second.endpoints()[0].ticket, ticket);
+  }
   finally { await Promise.all([receiver.close(), second.close()]); }
 });
