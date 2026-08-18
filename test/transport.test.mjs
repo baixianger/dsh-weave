@@ -36,6 +36,7 @@ test("Weave owns the reachable workspace session catalog and hides archived entr
   const active = { id: "active-session", header: { id: "active-session", createdAt: 20 } };
   const archived = { id: "archived-session", header: { id: "archived-session", createdAt: 10 } };
   const receiver = new DshWeaveTransport({
+    agents: { list() { return [{ id: "active-session", status: "idle", session: active }]; } },
     sessions: { list() { return [active]; } },
     sessionTitle: { get(session) { return { title: session.id === "active-session" ? "Active build" : session.id }; } },
     sessionPersistence: { async list() { return [active.header, archived.header]; } },
@@ -53,7 +54,20 @@ test("Weave owns the reachable workspace session catalog and hides archived entr
     await sender.trust(receiverTicket); await receiver.trust(senderTicket);
     const catalogs = await sender.remoteSessions();
     assert.equal(catalogs.length, 1); assert.equal(catalogs[0].hostName, "studio-mini");
-    assert.deepEqual(catalogs[0].workspaces, [{ id: "workspace-live", title: "Release", sessions: [{ id: "active-session", title: "Active build", running: true, updatedAt: 20 }] }]);
+    assert.equal(catalogs[0].state, "online");
+    assert.deepEqual(catalogs[0].workspaces, [{ id: "workspace-live", title: "Release", sessions: [{ id: "active-session", title: "Active build", state: "idle", running: true, updatedAt: 20 }] }]);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
+test("an unclaimed frame waits for Bridge cold-session delivery", async () => {
+  let completed = false;
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  const receiver = new DshWeaveTransport({ dshBridge: { async deliverExternal() { await new Promise((resolve) => setTimeout(resolve, 10)); completed = true; } } }, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    await sender.send({ ticket: receiverTicket, from: "source", to: "cold-session", text: "wake" });
+    assert.equal(completed, true);
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 

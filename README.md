@@ -20,6 +20,10 @@ DSH node A ── dsh-bridge ── dsh-weave ── Iroh ── Iroh ── dsh
 
 Iroh supplies authenticated, encrypted QUIC connections, direct peer-to-peer paths where possible, and relay fallback where required. Weave owns DSH host identity, host trust, endpoint refresh, reachability, the workspace/session directory, and authenticated request delivery. Higher-level plugins own their domain membership and capabilities; for example, Chat owns rooms and room capabilities.
 
+The remote directory reports agent state as `idle`, `running`, or `offline`.
+Host reachability is tracked separately as `unknown`, `connecting`, `online`,
+or `offline`; waking a persisted session remains a `dsh-bridge` responsibility.
+
 ## Install
 
 The transport MVP provides an Iroh endpoint, ticket exchange, explicit peer
