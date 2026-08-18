@@ -1,6 +1,6 @@
 {
   "name": "dsh-weave",
-  "version": "0.1.0-rc.6",
+  "version": "0.1.0-rc.7",
   "description": "A private, peer-to-peer weave protocol for connecting DeepSeek Harness nodes across machines.",
   "type": "module",
   "main": "./lib/index.js",
