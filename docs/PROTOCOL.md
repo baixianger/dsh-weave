@@ -8,6 +8,12 @@ and `room.delivery`. The room host validates the invitation capability for
 reads and posts. Claimed control frames never enter DSH Bridge; only an
 explicit `room.delivery` may wake an agent.
 
+`room.read` accepts an optional `waitMs` of up to 25 seconds. A remote room
+view repeats this cursor read while open; an empty timeout response advances no
+cursor. The authoritative host retains an unacknowledged `room.delivery` for
+seven days and retries it using the original message id. A successful remote
+Bridge handoff is the delivery acknowledgement.
+
 ## Transport
 
 - ALPN: `dsh-weave/1`
