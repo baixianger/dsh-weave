@@ -13,7 +13,7 @@ export interface DshWeaveMessage { readonly id: string; readonly from: string; r
 export interface DshWeaveConfig { trustedPeers?: readonly string[]; secretKey?: readonly number[]; identityPath?: string; peersPath?: string; persistIdentity?: boolean; persistPeers?: boolean; relayMode?: "default" | "disabled"; hostName?: string; }
 export declare class DshWeaveTransport {
   constructor(ctx: unknown, config?: DshWeaveConfig);
-  start(): Promise<unknown>; close(): Promise<void>; ticket(): Promise<string>; trust(ticket: string): Promise<string>; identify(ticket: string): string; peers(): string[]; endpoints(): Array<{ peerId: string; ticket: string }>; hosts(): Array<{ hostId: string; addressKnown: boolean; state: DshWeaveHostState }>;
+  start(): Promise<unknown>; close(): Promise<void>; ticket(): Promise<string>; trust(ticket: string): Promise<string>; untrust(peerId: string): Promise<boolean>; identify(ticket: string): string; peers(): string[]; endpoints(): Array<{ peerId: string; ticket: string }>; hosts(): Array<{ hostId: string; addressKnown: boolean; state: DshWeaveHostState }>;
   sessionStatus(hostId: string, sessionId: string): { sessionId: string; state: DshWeaveSessionState; live: boolean };
   subscribe(listener: (message: DshWeaveMessage) => void): () => void;
   send(request: { ticket: string; from: string; to: string; text: string; id?: string }): Promise<{ id: string; peerId: string; delivered: true; result?: unknown }>;

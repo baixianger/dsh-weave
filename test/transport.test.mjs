@@ -98,3 +98,19 @@ test("trusted peer identities survive a transport restart", async () => {
   }
   finally { await Promise.all([receiver.close(), second.close()]); }
 });
+
+test("removing a trusted peer removes its saved routing ticket", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "dsh-weave-"));
+  const peersPath = join(directory, "peers.json");
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
+  try {
+    const ticket = await receiver.ticket(); const peerId = await sender.trust(ticket);
+    assert.equal(await sender.untrust(peerId), true);
+    assert.deepEqual(sender.peers(), []); assert.deepEqual(sender.endpoints(), []);
+    await sender.close();
+    const restarted = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, peersPath });
+    try { await restarted.start(); assert.deepEqual(restarted.peers(), []); assert.deepEqual(restarted.endpoints(), []); }
+    finally { await restarted.close(); }
+  } finally { await receiver.close(); }
+});
