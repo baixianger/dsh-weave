@@ -11,7 +11,7 @@ test("trusted Iroh peers exchange a DSH Weave message", async () => {
   try {
     const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
     await sender.trust(receiverTicket); await receiver.trust(senderTicket);
-    const delivered = new Promise((resolve) => receiver.subscribe(resolve));
+    const delivered = new Promise((resolve) => receiver.subscribe((frame) => { resolve(frame); return true; }));
     assert.equal((await sender.send({ ticket: receiverTicket, from: "source", to: "target", text: "hello from Iroh" })).delivered, true);
     const received = await delivered;
     assert.equal(received.from, "source"); assert.equal(received.to, "target"); assert.equal(received.text, "hello from Iroh");
@@ -29,6 +29,35 @@ test("a claimed Weave frame returns a protocol response without Bridge delivery"
     const delivered = await sender.send({ ticket: receiverTicket, from: "client", to: "room", text: "read" });
     assert.deepEqual(delivered.result, { cursor: 7, events: ["read"] });
     assert.equal(bridgeCalls.length, 0);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
+test("a repeated peer message id is acknowledged without repeating effects", async () => {
+  let deliveries = 0;
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    receiver.subscribe(() => { deliveries += 1; return { claimed: true, result: { accepted: true } }; });
+    const request = { ticket: receiverTicket, from: "source", to: "room", text: "once", id: "stable-message-id" };
+    assert.equal((await sender.send(request)).result.accepted, true);
+    assert.equal((await sender.send(request)).result.accepted, true);
+    assert.equal(deliveries, 1);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
+test("a peer that does not acknowledge is bounded by the configured timeout", async () => {
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false, acknowledgementTimeoutMs: 40 });
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    receiver.subscribe(async () => { await new Promise((resolve) => setTimeout(resolve, 120)); return true; });
+    await assert.rejects(
+      () => sender.send({ ticket: receiverTicket, from: "source", to: "slow", text: "timeout" }),
+      /acknowledgement timed out/,
+    );
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 
@@ -68,6 +97,16 @@ test("an unclaimed frame waits for Bridge cold-session delivery", async () => {
     await sender.trust(receiverTicket); await receiver.trust(senderTicket);
     await sender.send({ ticket: receiverTicket, from: "source", to: "cold-session", text: "wake" });
     assert.equal(completed, true);
+  } finally { await Promise.all([sender.close(), receiver.close()]); }
+});
+
+test("an unclaimed frame is rejected when Bridge is unavailable", async () => {
+  const sender = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false, acknowledgementTimeoutMs: 500 });
+  const receiver = new DshWeaveTransport(undefined, { relayMode: "disabled", persistIdentity: false, persistPeers: false });
+  try {
+    const senderTicket = await sender.ticket(); const receiverTicket = await receiver.ticket();
+    await sender.trust(receiverTicket); await receiver.trust(senderTicket);
+    await assert.rejects(() => sender.send({ ticket: receiverTicket, from: "source", to: "missing", text: "do not drop" }), /no handler claimed/);
   } finally { await Promise.all([sender.close(), receiver.close()]); }
 });
 

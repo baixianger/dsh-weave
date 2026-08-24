@@ -1,6 +1,6 @@
 {
   "name": "dsh-weave",
-  "version": "0.1.0-rc.12",
+  "version": "0.1.0-rc.13",
   "description": "A private, peer-to-peer weave protocol for connecting DeepSeek Harness nodes across machines.",
   "type": "module",
   "main": "./lib/index.js",
@@ -23,13 +23,17 @@
   },
   "files": [
     "lib/",
-    "docs/",
+    "docs/ADR-001-authoritative-chat-rooms.md",
+    "docs/ARCHITECTURE.md",
+    "docs/PROTOCOL.md",
+    "docs/SECURITY.md",
     "README.md",
+    "RELEASES.md",
     "LICENSE",
     "cordis.patch.yml"
   ],
   "scripts": {
-    "check": "node --check lib/index.js && node --check lib/client.js && npm pack --dry-run",
+    "check": "node --check lib/index.js && node --check lib/client.js && npm test && npm pack --dry-run",
     "test": "node --test test/**/*.test.mjs"
   },
   "keywords": [
@@ -62,10 +66,14 @@
     "@number0/iroh": "^1.1.0"
   },
   "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/schemastery": "^3.18.1",
     "@deepseek-ai/dsh-tools": ">=0.1.0-rc.5",
     "react": "^18.2.0"
   },
   "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/schemastery": "^3.18.1",
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.7"
   }
 }
