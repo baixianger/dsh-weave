@@ -1,12 +1,22 @@
 # DSH Weave
 
+[English](README.md) | [简体中文](README.zh.md)
+
 > A private, peer-to-peer fabric for connecting DeepSeek Harness nodes across machines.
 
 **DSH Weave** turns a collection of local DSH installations into an intentional network: nodes can discover trusted peers, exchange session-aware events, hand off work, and recover after a connection drops — without placing a central server in the execution path.
 
 | Status | Transport | Scope |
 | --- | --- | --- |
-| `0.1.0-rc.3` transport MVP | Iroh + QUIC | Trusted DSH nodes |
+| Transport MVP | Iroh + QUIC | Explicitly trusted DSH nodes |
+
+## What it gives you
+
+- Persistent local node identity and explicit peer trust.
+- Encrypted QUIC connectivity with direct paths and relay fallback through Iroh.
+- A remote Host, workspace, and session directory for higher-level plugins.
+- Separate reachability and agent-presence states, so offline is not mistaken for idle.
+- A DSH Settings page for ticket exchange, relay status, and trusted peers.
 
 ## Product boundary
 
@@ -24,7 +34,7 @@ The remote directory reports agent state as `idle`, `running`, or `offline`.
 Host reachability is tracked separately as `unknown`, `connecting`, `online`,
 or `offline`; waking a persisted session remains a `dsh-bridge` responsibility.
 
-## Install
+## Quick start
 
 The transport MVP provides an Iroh endpoint, ticket exchange, explicit peer
 trust, and a message frame that is handed to `dsh-bridge` when both plugins
@@ -33,7 +43,12 @@ knows an endpoint address.
 
 ```bash
 dsh plugin --profile web add dsh-weave@next
+dsh web
 ```
+
+Open **Settings → Weave** on both Hosts, copy each node's ticket to the other
+Host, and explicitly trust it. Knowing an endpoint ticket does not grant trust
+until the receiving Host accepts it.
 
 ```js
 import {
